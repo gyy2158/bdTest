@@ -40,6 +40,14 @@ namespace TaskFront.Controllers
             //string[] s2 = str.Split(',');
             string s = "'" + string.Join("','", str.ToArray()) + "'";
             StateInfo si = new StateInfo();
+            RabbitAccess access = DBConnection();
+            DataTable dt = access.GetDataTable("select * from ts_j_basicinfo where BZJH in (" + s + ")");
+            si.data = dt;
+            return si;
+        }
+
+        public RabbitAccess DBConnection()
+        {
             RabbitSqlLib.DBEntity dBEntity = new DBEntity();
             dBEntity.DBType = "oracle";
             dBEntity.DBPort = "1521";
@@ -50,9 +58,7 @@ namespace TaskFront.Controllers
             string dBType = "";
             string connstr = dBEntity.GetConnStr(out dBType);
             RabbitAccess access = new RabbitAccess(dBType, connstr);
-            DataTable dt = access.GetDataTable("select * from ts_j_basicinfo where BZJH in (" + s + ")");
-            si.data = dt;
-            return si;
+            return access;
         }
 
         [HttpGet("GetInfo")]
@@ -61,16 +67,7 @@ namespace TaskFront.Controllers
             string[] s2 = str.Split(',');
             string s = string.Join(",", s2.ToArray());
             StateInfo si = new StateInfo();
-            RabbitSqlLib.DBEntity dBEntity = new DBEntity();
-            dBEntity.DBType = "oracle";
-            dBEntity.DBPort = "1521";
-            dBEntity.DBServer = "132.232.16.136";
-            dBEntity.DBName = "orcl";
-            dBEntity.DBUser = "dqts";
-            dBEntity.DBPwd = "dqts";
-            string dBType = "";
-            string connstr = dBEntity.GetConnStr(out dBType);
-            RabbitAccess access = new RabbitAccess(dBType, connstr);
+            RabbitAccess access = DBConnection();
             DataTable dt = access.GetDataTable("select * from ts_j_basicinfo where BZJH in (" + s + ")");
             si.data = dt;
             return si;
@@ -80,28 +77,19 @@ namespace TaskFront.Controllers
         public StateInfo GetTsJH([FromForm] PageHelper ph)
         {
             StateInfo si = new StateInfo();
-            RabbitSqlLib.DBEntity dBEntity = new DBEntity();
-            int begin_num = (ph.page - 1) * ph.limit + 1;
+            int begin_num = (ph.page - 1) * ph.limit;
             int end_num = ph.page * ph.limit;
-            dBEntity.DBType = "oracle";
-            dBEntity.DBPort = "1521";
-            dBEntity.DBServer = "132.232.16.136";
-            dBEntity.DBName = "orcl";
-            dBEntity.DBUser = "dqts";
-            dBEntity.DBPwd = "dqts";
-            string dBType = "";
-            string connstr = dBEntity.GetConnStr(out dBType);
-            RabbitAccess access = new RabbitAccess(dBType, connstr);
+            RabbitAccess access = DBConnection();
             string sql = "select * from ( " +
             "select row_limit.*, rownum rownum_ from(" +
             "select count_num.*, count(1)over() totalnum_ from(" +
-            "select * from ts_j_basicinfo  order by bzjh, tcrq" +
+            "select * from ts_j_basicinfo where jh like '%"+ph.jhmc+"%' order by bzjh, tcrq" +
             ") count_num" +
             ") row_limit where rownum <= " + end_num + "" +
             ")where rownum_ > " + begin_num + "";
             DataTable dt = access.GetDataTable(sql);
             si.data = dt;
-            return si; 
+            return si;
         }
 
         // POST api/values
