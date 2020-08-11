@@ -81,6 +81,8 @@ namespace TaskFront.Controllers
         {
             StateInfo si = new StateInfo();
             RabbitSqlLib.DBEntity dBEntity = new DBEntity();
+            int begin_num = (ph.page - 1) * ph.limit + 1;
+            int end_num = ph.page * ph.limit;
             dBEntity.DBType = "oracle";
             dBEntity.DBPort = "1521";
             dBEntity.DBServer = "132.232.16.136";
@@ -95,8 +97,8 @@ namespace TaskFront.Controllers
             "select count_num.*, count(1)over() totalnum_ from(" +
             "select * from ts_j_basicinfo  order by bzjh, tcrq" +
             ") count_num" +
-            ") row_limit where rownum <= " + ph.page * ph.limit + "" +
-            ")where rownum_ > " + ph.page + "";
+            ") row_limit where rownum <= " + end_num + "" +
+            ")where rownum_ > " + begin_num + "";
             DataTable dt = access.GetDataTable(sql);
             si.data = dt;
             return si; 

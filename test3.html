@@ -11,8 +11,8 @@
 <body>
     <script>
         let param = new URLSearchParams()
-        param.append('page', 10)
-        param.append('limit', 2)
+        param.append('page', 2)
+        param.append('limit', 4)
         param.append('jhmc', '井3')
         axios.post('http://127.0.0.1:51920/api/Xm/GetTsJH', param)
             .then(function (response) {
