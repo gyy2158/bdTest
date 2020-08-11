@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./jquery-3.5.1.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+        let arr = "'X6-40-S738', 'X4-3-B642', 'X5-D2-119', 'X6-40-S739', 'X2-1-S705'"
+        var url = 'http://127.0.0.1:51920/api/Xm/GetInfo';
+        $.ajax({
+            type: "get",
+            url: url,
+            contentType: 'application/json',
+            // dataType: "json",
+            // traditional: true,//这里设置为true
+            data: {
+                str: arr
+            },
+            success: function (res) {
+                console.info(res);
+            }
+        });
+    </script>
+</body>
+
+</html>
